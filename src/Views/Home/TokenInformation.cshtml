@@ -1,0 +1,21 @@
+﻿<h2>Token information</h2>
+
+This page will help you understand what the token is and what it contains.
+
+<h3>Raw token from Xena</h3>
+First off, lets have a look at the token as it is displayed in the header:
+<pre>@ViewBag.Token</pre>
+Note that it is 3 base64 encoded strings seperated by a dot. The first part is the header and it tells us about the algorithms used and the tokentype. The second part is the payload and the data itself. The last part is the signature of the token, it's used to verify that the token is valid.
+
+<h3>Part 1 - The header</h3>
+The header after base64 decoding and formatting:
+<pre>@ViewBag.Header</pre>
+
+<h3>Part 2 - Payload</h3>
+<pre>@ViewBag.Payload</pre>
+
+<h3>Part 3 - Signature</h3>
+To verify the signature of the message, we'll have a look at the @Html.ActionLink("discovery-endpoints","DiscoveryEndpoints","Home") to find the public keys. Then we use these public keys to validate that the signature of the message matches with the content:
+<pre>@ViewBag.Signature</pre>
+
+

@@ -1,0 +1,24 @@
+﻿<h2>Discovery endpoints</h2>
+
+The discovery endpoints gives us information about URLs and public keys. 
+
+<h3>The "well-known configuration"</h3>
+Most of the configuration is available through the URL <a href="https://login.xena.biz/.well-known/openid-configuration" target ="_blank">https://login.xena.biz/.well-known/openid-configuration</a> which gives us a object containing all information about the identity provider at Xena. 
+The well-known configuration looks like this:
+<pre>@ViewBag.WellknownConfiguration</pre>
+
+<h3>Signature keys</h3>
+To retrieve the public keys used for signing, the url <a href="https://login.xena.biz/.well-known/openid-configuration/jwks" target="_blank">https://login.xena.biz/.well-known/openid-configuration/jwks</a> is the place to go!
+It looks like this:
+<pre>@ViewBag.JsonWebKeys</pre>
+The essential parts are:
+<dl>
+    <dt>kid/x5t</dt>
+    <dd>The Key Identifier("kid") and the X509 Certificate Token("x5t") are used to identify the certificate used in the tokens. These will be referenced in the header of the token to identify which certificate has been used to sign a given token.</dd>
+
+    <dt>x5c</dt>
+    <dd>This is the X509 Certificate Chain and contains the certificate itself(just without the "-----BEGIN CERTIFICATE-----" and "-----END CERTIFICATE-----").</dd>
+</dl>
+
+<h3>The nerdy stuff</h3>
+The signature keys are described in <a href="https://tools.ietf.org/html/rfc7517" target="_blank">RFC 7517</a>

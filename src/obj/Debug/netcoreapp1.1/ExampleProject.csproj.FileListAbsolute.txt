@@ -1,0 +1,11 @@
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\bin\Debug\netcoreapp1.1\Test.Client.deps.json
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\bin\Debug\netcoreapp1.1\Test.Client.runtimeconfig.json
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\bin\Debug\netcoreapp1.1\Test.Client.runtimeconfig.dev.json
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\bin\Debug\netcoreapp1.1\Test.Client.dll
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\bin\Debug\netcoreapp1.1\Test.Client.pdb
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\obj\Debug\netcoreapp1.1\ExampleProject.csprojResolveAssemblyReference.cache
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\obj\Debug\netcoreapp1.1\ExampleProject.csproj.CoreCompileInputs.cache
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\obj\Debug\netcoreapp1.1\ExampleProject.AssemblyInfoInputs.cache
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\obj\Debug\netcoreapp1.1\ExampleProject.AssemblyInfo.cs
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\obj\Debug\netcoreapp1.1\Test.Client.dll
+C:\Users\thoeg\Documents\GitHub\Xena.ExampleApp.CSharp\src\obj\Debug\netcoreapp1.1\Test.Client.pdb
