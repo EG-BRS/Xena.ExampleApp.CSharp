@@ -23,18 +23,19 @@ namespace ExampleProject
 
         public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Load the settings so we can use DI later on...
             services.Configure<XenaProviderSettings>(Configuration.GetSection("XenaProvider"));
-            // Add framework services.
+
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<XenaProviderSettings> xenaSettingsAccessor)
         {
-            //We need this for docker! Docker modifies request url and this breaks stuff!
+            var xenaSettings = xenaSettingsAccessor.Value;
+
+            //When this demo is running inside Docker it is actually NAT'ed through, we need to support this by forwarding the headers...
             var forwardedHeadersOptions = new ForwardedHeadersOptions()
             {
                 ForwardedHeaders = ForwardedHeaders.All,
@@ -44,9 +45,7 @@ namespace ExampleProject
             forwardedHeadersOptions.KnownProxies.Clear();
             app.UseForwardedHeaders(forwardedHeadersOptions);
             app.UseHttpMethodOverride();
-            //...End of docker support
 
-            var xenaSettings = xenaSettingsAccessor.Value;
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
             
@@ -64,10 +63,7 @@ namespace ExampleProject
             {
                 AuthenticationScheme = "Cookies"
             });
-
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
                 AuthenticationScheme = "oidc",
@@ -86,7 +82,7 @@ namespace ExampleProject
                 
                 GetClaimsFromUserInfoEndpoint = true,
                 
-                SaveTokens = true //uden den virker HttpContext.Authentication.GetTokenAsync("access_token") ikke
+                SaveTokens = true //We need this for HttpContext.Authentication.GetTokenAsync("access_token") later on (Home controller)
             });
 
             app.UseStaticFiles();

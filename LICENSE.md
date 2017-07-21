@@ -1,1 +1,1 @@
-#Initial license
+This example is licensed as Beerware.
