@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>Test.Client</AssemblyName>
+    <AssemblyName>ExampleProject</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>Test.Client</PackageId>
+    <PackageId>ExampleProject</PackageId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="BundlerMinifier.Core" Version="2.2.306" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Routing" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.1" />
@@ -36,9 +37,15 @@
     <PackageReference Include="IdentityModel" Version="2.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
-    <Exec Command="bower install" />
-    <Exec Command="dotnet bundle" />
+    <!--    <Exec Command="bower install" />
+    <Exec Command="dotnet bundle" />-->
   </Target>
 
 </Project>

@@ -10,11 +10,9 @@ namespace ExampleProject
         {
             Console.Title = "Test Client";
 
-            
-
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls("http://localhost:5002")  //TODO what about this?!
+                .UseUrls("http://0.0.0.0:5002")  //TODO what about this?!
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
