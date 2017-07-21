@@ -1,4 +1,20 @@
 ﻿<h2>Welcome!</h2>
 Oh boy, is security fun or what?!
 <br/><br/>
+@if (ViewBag.NotConfigured)
+{
+    <div class="alert alert-danger">
+        <strong>Don't care much for manuals, eyh?</strong>
+        Well, you really really REALLY need to fill the values in appsettings.json if you want to use this example project!
+    </div>
+}
+else
+{
+    <div class="info alert-info">
+        <strong>Using configuration from appsettings.json:</strong><br/>
+        ClientID: @ViewBag.ClientID<br/>
+        CallBackURL: @ViewBag.CallbackURL<br/><br/>
+    </div>
+}
+
 Use the menu at the top to see the discovery endpoints for Xena, token information about your current token or see the result of an API call.

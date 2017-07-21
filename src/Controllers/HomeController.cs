@@ -4,23 +4,26 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace ExampleProject.Controllers
 {
     public class HomeController : Controller
     {
-        private string _authority;
+        private readonly XenaProviderSettings _xenaSettings;
 
-        public HomeController(IConfiguration configuration)
+        public HomeController(IOptions<XenaProviderSettings> xenaSettings)
         {
-            var xenaProviderSettingsSection = configuration.GetSection("XenaProvider");
-            _authority = xenaProviderSettingsSection["Authority"];
-
+            _xenaSettings = xenaSettings.Value;
 
         }
         public IActionResult Index()
         {
+            ViewBag.CallbackURL = _xenaSettings.CallBackUrl;
+            ViewBag.ClientID = _xenaSettings.ClientID;
+            ViewBag.NotConfigured = _xenaSettings.ClientID == "";
+
             return View();
         }
 
@@ -33,13 +36,13 @@ namespace ExampleProject.Controllers
         {
             using (var client = new HttpClient())
             {
-                HttpResponseMessage response = client.GetAsync(_authority + "/.well-known/openid-configuration").Result;
+                HttpResponseMessage response = client.GetAsync(_xenaSettings.Authority + "/.well-known/openid-configuration").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     ViewBag.WellknownConfiguration = response.Content.ReadAsStringAsync().Result.ToPrettyJson();
                 }
 
-                response = client.GetAsync(_authority + "/.well-known/openid-configuration/jwks").Result;
+                response = client.GetAsync(_xenaSettings.Authority + "/.well-known/openid-configuration/jwks").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     ViewBag.JsonWebKeys = response.Content.ReadAsStringAsync().Result.ToPrettyJson();
