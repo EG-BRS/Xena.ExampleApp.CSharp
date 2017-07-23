@@ -12,7 +12,7 @@ namespace ExampleProject.Controllers
     public class HomeController : Controller
     {
         private readonly XenaProviderSettings _xenaSettings;
-
+        private HttpClient _client = new HttpClient();
         public HomeController(IOptions<XenaProviderSettings> xenaSettings)
         {
             _xenaSettings = xenaSettings.Value;
@@ -32,25 +32,22 @@ namespace ExampleProject.Controllers
             return View();
         }
 
-        public IActionResult DiscoveryEndpoints()
+        public async IActionResult DiscoveryEndpoints()
         {
-            using (var client = new HttpClient())
+            //Get the well-known configration from Xena....
+            var response = await _client.GetAsync(_xenaSettings.Authority + "/.well-known/openid-configuration");
+            if (response.IsSuccessStatusCode)
             {
-                //Get the well-known configration from Xena....
-                HttpResponseMessage response = client.GetAsync(_xenaSettings.Authority + "/.well-known/openid-configuration").Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    ViewBag.WellknownConfiguration = response.Content.ReadAsStringAsync().Result.ToPrettyJson();
-                }
-
-                //Lets get the signing certificates aswell...
-                response = client.GetAsync(_xenaSettings.Authority + "/.well-known/openid-configuration/jwks").Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    ViewBag.JsonWebKeys = response.Content.ReadAsStringAsync().Result.ToPrettyJson();
-                }
+                ViewBag.WellknownConfiguration = response.Content.ReadAsStringAsync().Result.ToPrettyJson();
             }
 
+            //Lets get the signing certificates aswell...
+            response = await _client.GetAsync(_xenaSettings.Authority + "/.well-known/openid-configuration/jwks");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                ViewBag.JsonWebKeys = content.ToPrettyJson();
+            }
             return View();
         }
 
@@ -60,9 +57,10 @@ namespace ExampleProject.Controllers
             //Get the token and split it into its three parts and decoded them if needed...
             var token = await HttpContext.Authentication.GetTokenAsync("access_token");
             ViewBag.Token = token;
-            ViewBag.Header = token.Split('.')[0].ToPrettyJsonFromBase64();
-            ViewBag.Payload = token.Split('.')[1].ToPrettyJsonFromBase64();
-            ViewBag.Signature = token.Split('.')[2];
+            var parts = token.Split('.');
+            ViewBag.Header = parts[0].ToPrettyJsonFromBase64();
+            ViewBag.Payload = parts[1].ToPrettyJsonFromBase64();
+            ViewBag.Signature = parts[2];
 
             return View();
         }
@@ -73,9 +71,8 @@ namespace ExampleProject.Controllers
             var accessToken = await HttpContext.Authentication.GetTokenAsync("access_token");
 
             //Get a list of fiscals from your account in Xena...
-            var client = new HttpClient();
-            client.SetBearerToken(accessToken);
-            var content = await client.GetStringAsync("https://my.xena.biz/Api/User/FiscalSetup?forceNoPaging=true");
+            _client.SetBearerToken(accessToken);
+            var content = await _client.GetStringAsync("https://my.xena.biz/Api/User/FiscalSetup?forceNoPaging=true");
             ViewBag.Json = JObject.Parse(content).ToString();
             return View();
         }

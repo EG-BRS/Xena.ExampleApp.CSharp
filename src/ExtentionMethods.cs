@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -14,8 +15,8 @@ namespace ExampleProject
             var base64Str = str.PadRight(str.Length + (str.Length % 4), '=');
 
             //Now lets decode and display in pretty formattet JSON...
-            byte[] decodedBytes = Convert.FromBase64String(base64Str);
-            string decodedTxt = System.Text.Encoding.UTF8.GetString(decodedBytes);
+            var decodedBytes = Convert.FromBase64String(base64Str);
+            var decodedTxt = Encoding.UTF8.GetString(decodedBytes);
 
             return ToPrettyJson(decodedTxt);
         }
