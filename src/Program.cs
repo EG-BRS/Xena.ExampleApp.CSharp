@@ -12,7 +12,7 @@ namespace ExampleProject
 
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls("http://0.0.0.0:5002")  //TODO what about this?!
+                .UseUrls("http://*:5002")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
