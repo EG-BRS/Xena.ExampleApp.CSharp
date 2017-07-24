@@ -16,7 +16,6 @@ It's important to update `\src\appsettings.json` to your environment. The sectio
 ```
   "XenaProvider": {
     "Authority": "https://login.xena.biz",
-    "CallBackUrl": "http://10.0.75.2:5002", //This must match your hosting address
     "ClientID": "[your-clientid-here]",
     "ClientSecret": "[your-clientsecret-here]"
   }
