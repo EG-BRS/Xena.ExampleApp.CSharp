@@ -20,7 +20,6 @@ namespace ExampleProject.Controllers
         }
         public IActionResult Index()
         {
-            ViewBag.CallbackURL = _xenaSettings.CallBackUrl;
             ViewBag.ClientID = _xenaSettings.ClientID;
             ViewBag.NotConfigured = _xenaSettings.ClientID == "";
 
@@ -32,7 +31,7 @@ namespace ExampleProject.Controllers
             return View();
         }
 
-        public async IActionResult DiscoveryEndpoints()
+        public async Task<IActionResult> DiscoveryEndpoints()
         {
             //Get the well-known configration from Xena....
             var response = await _client.GetAsync(_xenaSettings.Authority + "/.well-known/openid-configuration");

@@ -78,7 +78,6 @@ namespace ExampleProject
 
                 ResponseType = "code id_token",
                 Scope = { "testapi" },
-                PostLogoutRedirectUri = xenaSettings.CallBackUrl,
                 
                 GetClaimsFromUserInfoEndpoint = true,
                 
