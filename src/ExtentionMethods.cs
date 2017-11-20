@@ -12,7 +12,8 @@ namespace ExampleProject
         public static string ToPrettyJsonFromBase64(this string str)
         {
             //IdentityServer strips the trailing "=" which we need to fix to decodes it using Convert.FromBase64String(). It must be divisble by 4...
-            var base64Str = str.PadRight(str.Length + (str.Length % 4), '=');
+            var base64Str = str.PadRight(str.Length + (4 - str.Length % 4), '=');
+           
 
             //Now lets decode and display in pretty formattet JSON...
             var decodedBytes = Convert.FromBase64String(base64Str);
