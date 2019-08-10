@@ -1,4 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -26,15 +30,43 @@ namespace ExampleProject
         public void ConfigureServices(IServiceCollection services)
         {
             //Load the settings so we can use DI later on...
-            services.Configure<XenaProviderSettings>(Configuration.GetSection("XenaProvider"));
+            //services.Configure<XenaProviderSettings>(Configuration.GetSection("XenaProvider"));
+            var xenaSettings = Configuration.GetSection("XenaProvider").Get<XenaProviderSettings>();
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+                .AddCookie(options =>
+                {
+                })
+                .AddOpenIdConnect(options =>
+                {
+                    options.SignInScheme = "Cookies";
+
+                    options.Authority = xenaSettings.Authority;
+                    options.RequireHttpsMetadata = false;
+
+                    options.ClientId = xenaSettings.ClientID;
+                    options.ClientSecret = xenaSettings.ClientSecret;
+                    options.ResponseType = "code id_token";
+
+                    options.SaveTokens = true;
+                    options.GetClaimsFromUserInfoEndpoint = true;
+
+                    options.Scope.Add("testapi");
+
+                    options.ClaimActions.MapJsonKey("website", "website");
+                });
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<XenaProviderSettings> xenaSettingsAccessor)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var xenaSettings = xenaSettingsAccessor.Value;
-
             //When this demo is running inside Docker it is actually NAT'ed through, we need to support this by forwarding the headers...
             var forwardedHeadersOptions = new ForwardedHeadersOptions()
             {
@@ -48,43 +80,21 @@ namespace ExampleProject
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
+                //app.UseBrowserLink();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = "Cookies"
-            });
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-            {
-                AuthenticationScheme = "oidc",
-                SignInScheme = "Cookies",
-                
-                
-                Authority = xenaSettings.Authority,
-                RequireHttpsMetadata = false,
-
-                ClientId = xenaSettings.ClientID,
-                ClientSecret = xenaSettings.ClientSecret,
-
-                ResponseType = "code id_token",
-                Scope = { "testapi" },
-                
-                GetClaimsFromUserInfoEndpoint = true,
-                
-                SaveTokens = true //We need this for HttpContext.Authentication.GetTokenAsync("access_token") later on (Home controller)
-            });
-
             app.UseStaticFiles();
+
+            app.UseAuthentication();
+
 
             app.UseMvc(routes =>
             {

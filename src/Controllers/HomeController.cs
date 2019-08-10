@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -49,14 +50,16 @@ namespace ExampleProject.Controllers
             }
             return View();
         }
-
+        
         [Authorize]
         public async Task<IActionResult> TokenInformation()
         {
-            //Get the token and split it into its three parts and decoded them if needed...
-            var token = await HttpContext.Authentication.GetTokenAsync("access_token");
-            ViewBag.Token = token;
-            var parts = token.Split('.');
+            var auth = await HttpContext.AuthenticateAsync();
+            var tokens = auth.Properties.GetTokens();
+            var accessToken = tokens.FirstOrDefault(t => t.Name == "access_token");
+
+            ViewBag.Token = accessToken.Value;
+            var parts = accessToken.Value.Split('.');
             ViewBag.Header = parts[0].ToPrettyJsonFromBase64();
             ViewBag.Payload = parts[1].ToPrettyJsonFromBase64();
             ViewBag.Signature = parts[2];
@@ -67,10 +70,12 @@ namespace ExampleProject.Controllers
         [Authorize]
         public async Task<IActionResult> ApiExample()
         {
-            var accessToken = await HttpContext.Authentication.GetTokenAsync("access_token");
+            var auth = await HttpContext.AuthenticateAsync();
+            var tokens = auth.Properties.GetTokens();
+            var accessToken = tokens.FirstOrDefault(t => t.Name == "access_token");
 
             //Get a list of fiscals from your account in Xena...
-            _client.SetBearerToken(accessToken);
+            _client.SetBearerToken(accessToken.Value);
             var content = await _client.GetStringAsync("https://my.xena.biz/Api/User/FiscalSetup?forceNoPaging=true");
             ViewBag.Json = JObject.Parse(content).ToString();
             return View();
